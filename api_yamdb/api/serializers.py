@@ -1,20 +1,31 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from reviews.models import Category, Titles, Genre
+from reviews.models import Category, Titles, Genre, Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ('name')
+        fields = 'name'
         model = Category
-        validators = [UniqueValidator, ]
+        validators = [
+            UniqueValidator,
+        ]
 
 
 class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ('name')
+        fields = 'name'
         model = Genre
-        validators = [UniqueValidator, ]
+        validators = [
+            UniqueValidator,
+        ]
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        model = Review
