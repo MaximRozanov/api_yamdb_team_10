@@ -7,8 +7,9 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS
 
     def has_object_permission(self, request, view, obj):
-        return (request.method in permissions.SAFE_METHODS
-                or bool(request.user and request.user.is_staff))
+        return request.method in permissions.SAFE_METHODS or bool(
+            request.user and request.user.is_staff
+        )
 
 
 class AdminOnly(permissions.BasePermission):
@@ -16,4 +17,9 @@ class AdminOnly(permissions.BasePermission):
 
 
 class ModeratorAdmin(permissions.BasePermission):
+    pass
+
+
+# SAFE_METHODS - все, добавлять - авторизированные, менять author Модератор или Админ
+class IsOwnerOrModeratorAdmin(permissions.BasePermission):
     pass

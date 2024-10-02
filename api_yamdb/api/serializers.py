@@ -1,21 +1,19 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from reviews.models import Category, Titles, Genre, User
+from reviews.models import Category, Titles, Genre, User, Review
 
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (
-            'username', 'email', 'bio', 'role')
+        fields = ('username', 'email', 'bio', 'role')
 
 
 class NoAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (
-            'username', 'email', 'bio', 'role')
+        fields = ('username', 'email', 'bio', 'role')
         read_only_fields = ('role',)
 
 
@@ -29,7 +27,9 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
         model = Category
-        validators = [UniqueValidator, ]
+        validators = [
+            UniqueValidator,
+        ]
         lookup_field = 'slug'
 
 
@@ -37,5 +37,14 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
         model = Genre
-        validators = [UniqueValidator, ]
+        validators = [
+            UniqueValidator,
+        ]
         lookup_field = 'slug'
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        model = Review

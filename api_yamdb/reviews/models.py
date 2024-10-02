@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import AbstractUser
 
 from .validators import validate_username
@@ -18,10 +19,7 @@ class Genre(models.Model):
 class Titles(models.Model):
     name = models.CharField(max_length=256)
     year = models.IntegerField()
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE
-    )
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     genres = models.ManyToManyField(Genre, through='GenreTitle')
 
 
@@ -43,31 +41,19 @@ class User(AbstractUser):
         max_length=MAX_LENGTH,
         unique=True,
         blank=False,
-        null=False
+        null=False,
     )
     email = models.EmailField(
-        max_length=254,
-        unique=True,
-        blank=False,
-        null=False
+        max_length=254, unique=True, blank=False, null=False
     )
     role = models.CharField(
-        max_length=20,
-        choices=USERS_ROLE,
-        default=USER,
-        blank=True
+        max_length=20, choices=USERS_ROLE, default=USER, blank=True
     )
     bio = models.TextField(
         blank=True,
     )
-    first_name = models.CharField(
-        max_length=150,
-        blank=True
-    )
-    last_name = models.CharField(
-        max_length=150,
-        blank=True
-    )
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
     confirmation_code = models.CharField(
         max_length=MAX_LENGTH,
         null=False,
@@ -85,3 +71,18 @@ class User(AbstractUser):
     @property
     def is_moderator(self):
         return self.role == MODERATOR
+
+
+class Review(models.Model):
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews'
+    )
+    title = models.ForeignKey(
+        Titles, on_delete=models.CASCADE, related_name='reviews'
+    )
+    text = models.TextField()
+    score = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[MaxValueValidator(10), MinValueValidator(1)],
+    )
+    pub_date = models.DateTimeField(auto_now_add=True)
