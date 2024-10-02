@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializers import (
     CategorySerializer,
+    CommentSerializer,
     GenreSerializer,
     UsersSerializer,
     NoAdminSerializer,
@@ -12,7 +13,7 @@ from .serializers import (
     ReviewSerializer,
 )
 
-from reviews.models import Category, Genre, Titles, User, Review
+from reviews.models import Category, Genre, Titles, User, Review, Comment
 from .permissions import (
     IsAdminOrReadOnly,
     IsOwnerOrModeratorAdmin,
@@ -61,7 +62,43 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
         return Review.objects.filter(title=title)
 
+    def perform_create(self, serializer):
+        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+        serializer.save(title=title)
+
+    def perform_update(self, serializer):
+        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+        serializer.save(title=title)
+
     serializer_class = ReviewSerializer
+    permission_classes = [
+        IsOwnerOrModeratorAdmin,
+    ]
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        review = get_object_or_404(
+            Review.objects.filter(title__id=self.kwargs['title_id']),
+            pk=self.kwargs['review_id'],
+        )
+        return Comment.objects.filter(review=review)
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(
+            Review.objects.filter(title__id=self.kwargs['title_id']),
+            pk=self.kwargs['review_id'],
+        )
+        serializer.save(author=self.request.user, review=review)
+
+    def perform_update(self, serializer):
+        review = get_object_or_404(
+            Review.objects.filter(title__id=self.kwargs['title_id']),
+            pk=self.kwargs['review_id'],
+        )
+        serializer.save(author=self.request.user, review=review)
+
+    serializer_class = CommentSerializer
     permission_classes = [
         IsOwnerOrModeratorAdmin,
     ]

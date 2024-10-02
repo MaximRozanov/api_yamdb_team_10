@@ -86,3 +86,14 @@ class Review(models.Model):
         validators=[MaxValueValidator(10), MinValueValidator(1)],
     )
     pub_date = models.DateTimeField(auto_now_add=True)
+
+
+class Comment(models.Model):
+    review = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name='comments'
+    )
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comments'
+    )
+    pub_date = models.DateTimeField(auto_now_add=True)
