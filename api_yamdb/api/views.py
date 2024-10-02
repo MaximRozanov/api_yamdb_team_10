@@ -13,7 +13,12 @@ from .serializers import (
 )
 
 from reviews.models import Category, Genre, Titles, User, Review
-from .permissions import IsAdminOrReadOnly, ModeratorAdmin, AdminOnly
+from .permissions import (
+    IsAdminOrReadOnly,
+    IsOwnerOrModeratorAdmin,
+    ModeratorAdmin,
+    AdminOnly,
+)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -57,3 +62,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return Review.objects.filter(title=title)
 
     serializer_class = ReviewSerializer
+    permission_classes = [
+        IsOwnerOrModeratorAdmin,
+    ]

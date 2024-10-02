@@ -20,5 +20,6 @@ class ModeratorAdmin(permissions.BasePermission):
     pass
 
 
-class IsOwner(permissions.BasePermission):
+# SAFE_METHODS - все, добавлять - авторизированные, менять author Модератор или Админ
+class IsOwnerOrModeratorAdmin(permissions.BasePermission):
     pass
