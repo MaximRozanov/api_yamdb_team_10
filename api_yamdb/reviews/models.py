@@ -6,6 +6,11 @@ class Category(models.Model):
     slug = models.SlugField(unique=True, max_length=50)
 
 
+class Genre(models.Model):
+    name = models.CharField(max_length=256)
+    slug = models.SlugField(unique=True, max_length=50)
+
+
 class Titles(models.Model):
     name = models.CharField(max_length=256)
     year = models.IntegerField()
@@ -13,11 +18,7 @@ class Titles(models.Model):
         Category,
         on_delete=models.CASCADE
     )
-
-
-class Genre(models.Model):
-    name = models.CharField(max_length=256)
-    slug = models.SlugField(unique=True, max_length=50)
+    genres = models.ManyToManyField(Genre, through='GenreTitle')
 
 
 class GenreTitle(models.Model):
