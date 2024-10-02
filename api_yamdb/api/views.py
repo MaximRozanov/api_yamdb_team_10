@@ -1,9 +1,23 @@
 from rest_framework import filters
 from rest_framework import viewsets, mixins
+from rest_framework.permissions import IsAuthenticated
 
-from .serializers import CategorySerializer, GenreSerializer
-from reviews.models import Category, Genre, Titles
-from .permissions import IsAdminOrReadOnly
+from .serializers import (CategorySerializer,
+                          GenreSerializer,
+                          UsersSerializer,
+                          NoAdminSerializer,
+                          SignupSerializer)
+
+from reviews.models import Category, Genre, Titles, User
+from .permissions import IsAdminOrReadOnly, ModeratorAdmin, AdminOnly
+
+
+class UsersViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UsersSerializer
+    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
 
 
 class MixinViewSet(
