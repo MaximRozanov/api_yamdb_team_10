@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import filters
 from rest_framework import viewsets, mixins
@@ -21,6 +22,7 @@ from .permissions import (
     ModeratorAdmin,
     AdminOnly,
 )
+from .filters import TitlesFilter
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -72,6 +74,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Titles.objects.all()
     filterset_fields = ('category', 'genre', 'name', 'year')
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitlesFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
