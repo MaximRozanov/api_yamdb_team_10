@@ -10,6 +10,8 @@ from .serializers import (
     NoAdminSerializer,
     SignupSerializer,
     ReviewSerializer,
+    TitleReadSerializer,
+    TitleWriteSerializer
 )
 
 from reviews.models import Category, Genre, Titles, User, Review
@@ -65,3 +67,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [
         IsOwnerOrModeratorAdmin,
     ]
+
+
+class TitlesViewSet(viewsets.ModelViewSet):
+    queryset = Titles.objects.all()
+    # filter_backends = (DjangoFilterBackend, )
+    # filterset_fields = ('category', 'genre', 'name', 'year')
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleReadSerializer
+        return TitleWriteSerializer
