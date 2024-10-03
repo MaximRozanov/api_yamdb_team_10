@@ -22,6 +22,7 @@ router_v1.register(
     ReviewViewSet,
     basename='reviews',
 )
+router_v1.register('titles', GenreViewSet, basename='title')
 
 urlpatterns = [
     path(f'api/{VERSION}/', include(router_v1.urls)),
