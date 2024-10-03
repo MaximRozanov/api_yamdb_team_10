@@ -73,7 +73,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Titles.objects.all()
-    filterset_fields = ('category', 'genre', 'name', 'year')
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
 

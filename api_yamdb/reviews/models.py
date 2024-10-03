@@ -31,6 +31,9 @@ class Titles(models.Model):
     genre = models.ManyToManyField(Genre, through='GenreTitle')
     description = models.TextField(blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class GenreTitle(models.Model):
     title = models.ForeignKey(Titles, on_delete=models.CASCADE)

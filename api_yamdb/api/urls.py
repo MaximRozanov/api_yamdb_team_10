@@ -9,7 +9,10 @@ from api.views import (
     UsersViewSet,
 )
 
-from api.views import CategoryViewSet, GenreViewSet, UsersViewSet
+from api.views import (CategoryViewSet,
+                       GenreViewSet,
+                       UsersViewSet, 
+                       TitlesViewSet)
 from api.constants import VERSION
 
 router_v1 = DefaultRouter()
@@ -22,7 +25,7 @@ router_v1.register(
     ReviewViewSet,
     basename='reviews',
 )
-router_v1.register('titles', GenreViewSet, basename='title')
+router_v1.register('titles', TitlesViewSet, basename='title')
 
 urlpatterns = [
     path(f'api/{VERSION}/', include(router_v1.urls)),
