@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
-
+from rest_framework.validators import UniqueValidator
+from rest_framework.relations import SlugRelatedField
 from reviews.models import Category, Titles, Genre, User, Review, Comment
 
 
@@ -44,30 +44,21 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        slug_field='username',
-        queryset=User.objects.all(),
-        default=serializers.CurrentUserDefault(),
-    )
+    author = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         fields = '__all__'
         model = Review
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=['author', 'title'],
-            )
-        ]
+        read_only_fields = ('title',)
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         fields = '__all__'
         model = Comment
         read_only_fields = (
-            'author',
             'pub_date',
             'review',
         )

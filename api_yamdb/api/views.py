@@ -1,24 +1,19 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import filters
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, filters
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 
 from .serializers import (
     CategorySerializer,
     CommentSerializer,
     GenreSerializer,
     UsersSerializer,
-    NoAdminSerializer,
-    SignupSerializer,
     ReviewSerializer,
 )
 
 from reviews.models import Category, Genre, Titles, User, Review, Comment
 from .permissions import (
-    IsAdminOrReadOnly,
     IsOwnerOrModeratorAdmin,
-    ModeratorAdmin,
-    AdminOnly,
 )
 
 
@@ -64,11 +59,17 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
-        serializer.save(title=title)
+
+        queryset = Review.objects.filter(author=self.request.user, title=title)
+
+        if queryset.exists():
+            raise ValidationError('Отзыв уже существует')
+
+        serializer.save(author=self.request.user, title=title)
 
     def perform_update(self, serializer):
         title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
-        serializer.save(title=title)
+        serializer.save(author=self.request.user, title=title)
 
     serializer_class = ReviewSerializer
     permission_classes = [
