@@ -52,12 +52,18 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class TitleReadSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=True)
-    category = CategorySerializer()
+    genre = GenreSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
 
     class Meta:
         model = Titles
-        fields = '__all__'
+        fields = (
+            'name',
+            'year',
+            'description',
+            'genre',
+            'category'
+        )
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
@@ -72,7 +78,11 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Titles
-        fields = '__all__'
+        fields = ('name',
+                  'year',
+                  'description',
+                  'genre',
+                  'category')
 
     def validate_year(self, value):
         current_year = now().year

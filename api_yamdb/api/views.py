@@ -71,8 +71,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Titles.objects.all()
-    # filter_backends = (DjangoFilterBackend, )
-    # filterset_fields = ('category', 'genre', 'name', 'year')
+    filterset_fields = ('category', 'genre', 'name', 'year')
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
