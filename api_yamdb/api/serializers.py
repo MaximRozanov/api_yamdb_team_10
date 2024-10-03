@@ -57,3 +57,24 @@ class TitleReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Titles
         fields = '__all__'
+
+
+class TitleWriteSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects.all(),
+        many=True
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all())
+
+    class Meta:
+        model = Titles
+        fields = '__all__'
+
+    def validate_year(self, value):
+        current_year = now().year
+        if value > current_year:
+            raise serializers.ValidationError("Некорректная дата")
+        return value
