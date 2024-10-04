@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from django.utils.timezone import now
+
 from rest_framework.relations import SlugRelatedField
 from reviews.models import Category, Titles, Genre, User, Review, Comment
 
@@ -50,6 +52,46 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('title',)
+
+
+class TitleReadSerializer(serializers.ModelSerializer):
+    genre = GenreSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
+
+    class Meta:
+        model = Titles
+        fields = (
+            'name',
+            'year',
+            'description',
+            'genre',
+            'category'
+        )
+
+
+class TitleWriteSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects.all(),
+        many=True
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all())
+
+    class Meta:
+        model = Titles
+        fields = ('name',
+                  'year',
+                  'description',
+                  'genre',
+                  'category')
+
+    def validate_year(self, value):
+        current_year = now().year
+        if value > current_year:
+            raise serializers.ValidationError("Некорректная дата")
+        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):

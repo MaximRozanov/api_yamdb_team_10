@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins, filters
 from rest_framework.permissions import IsAuthenticated
@@ -9,12 +10,15 @@ from .serializers import (
     GenreSerializer,
     UsersSerializer,
     ReviewSerializer,
+    TitleReadSerializer,
+    TitleWriteSerializer
 )
 
 from reviews.models import Category, Genre, Titles, User, Review, Comment
 from .permissions import (
     IsOwnerOrModeratorAdmin,
 )
+from .filters import TitlesFilter
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -75,6 +79,17 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [
         IsOwnerOrModeratorAdmin,
     ]
+
+
+class TitlesViewSet(viewsets.ModelViewSet):
+    queryset = Titles.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitlesFilter
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleReadSerializer
+        return TitleWriteSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
