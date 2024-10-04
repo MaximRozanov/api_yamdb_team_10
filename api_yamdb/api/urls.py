@@ -15,7 +15,7 @@ from api.views import (
 
 from api.views import (CategoryViewSet,
                        GenreViewSet,
-                       UsersViewSet, 
+                       UsersViewSet,
                        TitlesViewSet)
 from api.constants import VERSION
 
