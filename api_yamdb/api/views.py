@@ -18,6 +18,7 @@ from .serializers import (
 from reviews.models import Category, Genre, Titles, User, Review, Comment
 from .permissions import (
     IsOwnerOrModeratorAdmin,
+    IsAdminOrReadOnly
 )
 from .filters import TitlesFilter
 
@@ -45,7 +46,7 @@ class CategoryViewSet(MixinViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    # permission_classes = [IsAdminOrReadOnly, ]
+    permission_classes = [IsAdminOrReadOnly, ]
 
 
 class GenreViewSet(MixinViewSet):
@@ -54,7 +55,7 @@ class GenreViewSet(MixinViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    # permission_classes = [IsAdminOrReadOnly, ]
+    permission_classes = [IsAdminOrReadOnly, ]
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -87,7 +88,8 @@ class TitlesViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
     http_method_names = ['get', 'head', 'options', 'post', 'patch', 'delete']
-
+    permission_classes = [IsAdminOrReadOnly, ]
+    
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TitleReadSerializer
