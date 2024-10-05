@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework import viewsets, mixins, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
@@ -85,6 +86,7 @@ class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Titles.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
+    http_method_names = ['get', 'head', 'options', 'post', 'patch', 'delete']
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
