@@ -17,7 +17,7 @@ from api.views import (CategoryViewSet,
                        GenreViewSet,
                        UsersViewSet,
                        TitlesViewSet)
-from api_yamdb.api.api_constants import VERSION
+from api.constants import VERSION
 
 router_v1 = DefaultRouter()
 
