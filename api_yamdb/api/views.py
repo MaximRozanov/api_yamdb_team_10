@@ -1,5 +1,9 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, mixins, filters
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 from rest_framework import filters, status
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
@@ -10,21 +14,23 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import (
     CategorySerializer,
+    CommentSerializer,
     GenreSerializer,
     UsersSerializer,
     NoAdminSerializer,
     SignupSerializer,
     ReviewSerializer, TokenSerializer,
+    ReviewSerializer,
+    TitleReadSerializer,
+    TitleWriteSerializer
 )
 
-from reviews.models import Category, Genre, Titles, User, Review
+from reviews.models import Category, Genre, Titles, User, Review, Comment
 from .permissions import (
-    IsAdminOrReadOnly,
     IsOwnerOrModeratorAdmin,
-    ModeratorAdmin,
-    AdminOnly,
 )
 from .utils import generate_confirmation_code
+from .filters import TitlesFilter
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -62,24 +68,6 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 class APIToken(TokenObtainPairView):
     serializer_class = TokenSerializer
-
-    # def post(self, request):
-    #     serializer = TokenSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     data = serializer.validated_data
-    #     try:
-    #         user = User.objects.get(username=data['username'])
-    #     except User.DoesNotExist:
-    #         return Response(
-    #             {'username': 'User has not been found.'},
-    #             status=status.HTTP_404_NOT_FOUND)
-    #     if data.get('confirmation_code') == user.confirmation_code:
-    #         token = RefreshToken.for_user(user).access_token
-    #         return Response({'token': str(token)},
-    #                         status=status.HTTP_201_CREATED)
-    #     return Response(
-    #         {'confirmation_code': 'Invalid confirmation code!'},
-    #         status=status.HTTP_400_BAD_REQUEST)
 
 
 class APISignup(APIView):
@@ -144,7 +132,60 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
         return Review.objects.filter(title=title)
 
+    def perform_create(self, serializer):
+        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+
+        queryset = Review.objects.filter(author=self.request.user, title=title)
+
+        if queryset.exists():
+            raise ValidationError('Отзыв уже существует')
+
+        serializer.save(author=self.request.user, title=title)
+
+    def perform_update(self, serializer):
+        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+        serializer.save(author=self.request.user, title=title)
+
     serializer_class = ReviewSerializer
+    permission_classes = [
+        IsOwnerOrModeratorAdmin,
+    ]
+
+
+class TitlesViewSet(viewsets.ModelViewSet):
+    queryset = Titles.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitlesFilter
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleReadSerializer
+        return TitleWriteSerializer
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        review = get_object_or_404(
+            Review.objects.filter(title__id=self.kwargs['title_id']),
+            pk=self.kwargs['review_id'],
+        )
+        return Comment.objects.filter(review=review)
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(
+            Review.objects.filter(title__id=self.kwargs['title_id']),
+            pk=self.kwargs['review_id'],
+        )
+        serializer.save(author=self.request.user, review=review)
+
+    def perform_update(self, serializer):
+        review = get_object_or_404(
+            Review.objects.filter(title__id=self.kwargs['title_id']),
+            pk=self.kwargs['review_id'],
+        )
+        serializer.save(author=self.request.user, review=review)
+
+    serializer_class = CommentSerializer
     permission_classes = [
         IsOwnerOrModeratorAdmin,
     ]
