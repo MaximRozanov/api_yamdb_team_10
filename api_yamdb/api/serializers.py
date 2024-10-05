@@ -61,6 +61,7 @@ class TitleReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Titles
         fields = (
+            'id',
             'name',
             'year',
             'description',
@@ -81,11 +82,13 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Titles
-        fields = ('name',
-                  'year',
-                  'description',
-                  'genre',
-                  'category')
+        fields = (
+            'id',
+            'name',
+            'year',
+            'description',
+            'genre',
+            'category')
 
     def validate_year(self, value):
         current_year = now().year
