@@ -3,7 +3,7 @@ from rest_framework.validators import UniqueValidator
 from django.utils.timezone import now
 
 from rest_framework.relations import SlugRelatedField
-from reviews.models import Category, Titles, Genre, User, Review, Comment
+from reviews.models import Category, Title, Genre, User, Review, Comment
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -59,7 +59,7 @@ class TitleReadSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
 
     class Meta:
-        model = Titles
+        model = Title
         fields = (
             'id',
             'name',
@@ -81,7 +81,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all())
 
     class Meta:
-        model = Titles
+        model = Title
         fields = (
             'id',
             'name',

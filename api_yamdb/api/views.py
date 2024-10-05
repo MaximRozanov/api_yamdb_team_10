@@ -15,7 +15,7 @@ from .serializers import (
     TitleWriteSerializer
 )
 
-from reviews.models import Category, Genre, Titles, User, Review, Comment
+from reviews.models import Category, Genre, Title, User, Review, Comment
 from .permissions import (
     IsOwnerOrModeratorAdmin,
     IsAdminOrReadOnly
@@ -60,11 +60,11 @@ class GenreViewSet(MixinViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
-        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+        title = get_object_or_404(Title, pk=self.kwargs['title_id'])
         return Review.objects.filter(title=title)
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+        title = get_object_or_404(Title, pk=self.kwargs['title_id'])
 
         queryset = Review.objects.filter(author=self.request.user, title=title)
 
@@ -74,7 +74,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, title=title)
 
     def perform_update(self, serializer):
-        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+        title = get_object_or_404(Title, pk=self.kwargs['title_id'])
         serializer.save(author=self.request.user, title=title)
 
     serializer_class = ReviewSerializer
@@ -84,7 +84,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
-    queryset = Titles.objects.all()
+    queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
     http_method_names = ['get', 'head', 'options', 'post', 'patch', 'delete']
