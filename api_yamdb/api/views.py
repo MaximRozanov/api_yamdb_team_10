@@ -33,11 +33,16 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 class MixinViewSet(
     mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
-    pass
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PUT':
+            raise MethodNotAllowed('PUT запросы не разрешены.')
+        return super().update(request, *args, **kwargs)
 
 
 class CategoryViewSet(MixinViewSet):
@@ -83,11 +88,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
     ]
 
 
-class TitlesViewSet(viewsets.ModelViewSet):
+class TitlesViewSet(MixinViewSet):
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
-    http_method_names = ['get', 'head', 'options', 'post', 'patch', 'delete']
     permission_classes = [IsAdminOrReadOnly, ]
     
     def get_serializer_class(self):
