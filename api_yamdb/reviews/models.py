@@ -29,7 +29,7 @@ class Titles(models.Model):
                                  on_delete=models.SET_NULL,
                                  null=True)
     genre = models.ManyToManyField(Genre, through='GenreTitle')
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
