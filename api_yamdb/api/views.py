@@ -1,6 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework import viewsets, mixins, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
@@ -25,9 +26,12 @@ from .serializers import (
     TitleWriteSerializer
 )
 
-from reviews.models import Category, Genre, Titles, User, Review, Comment
+from reviews.models import Category, Genre, Title, User, Review, Comment
 from .permissions import (
-    IsOwnerOrModeratorAdmin, AdminOnly,
+    IsOwnerOrModeratorAdmin,
+    IsAdminOrReadOnly
+    IsOwnerOrModeratorAdmin, 
+    AdminOnly,
 )
 from .utils import generate_confirmation_code
 from .filters import TitlesFilter
@@ -101,7 +105,7 @@ class APISignup(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class MixinViewSet(
+class CategoryGenreMixinViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
@@ -109,32 +113,45 @@ class MixinViewSet(
 ):
     pass
 
+class MixinViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PUT':
+            raise MethodNotAllowed('PUT запросы не разрешены.')
+        return super().update(request, *args, **kwargs)
 
-class CategoryViewSet(MixinViewSet):
+
+class CategoryViewSet(CategoryGenreMixinViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    # permission_classes = [IsAdminOrReadOnly, ]
+    permission_classes = [IsAdminOrReadOnly, ]
 
 
-class GenreViewSet(MixinViewSet):
+class GenreViewSet(CategoryGenreMixinViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    # permission_classes = [IsAdminOrReadOnly, ]
+    permission_classes = [IsAdminOrReadOnly, ]
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
-        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+        title = get_object_or_404(Title, pk=self.kwargs['title_id'])
         return Review.objects.filter(title=title)
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+        title = get_object_or_404(Title, pk=self.kwargs['title_id'])
 
         queryset = Review.objects.filter(author=self.request.user, title=title)
 
@@ -144,7 +161,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, title=title)
 
     def perform_update(self, serializer):
-        title = get_object_or_404(Titles, pk=self.kwargs['title_id'])
+        title = get_object_or_404(Title, pk=self.kwargs['title_id'])
         serializer.save(author=self.request.user, title=title)
 
     serializer_class = ReviewSerializer
@@ -153,11 +170,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
     ]
 
 
-class TitlesViewSet(viewsets.ModelViewSet):
-    queryset = Titles.objects.all()
+class TitlesViewSet(MixinViewSet):
+    queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
-
+    permission_classes = [IsAdminOrReadOnly, ]
+    
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TitleReadSerializer

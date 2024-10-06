@@ -6,8 +6,9 @@ from django.utils.timezone import now
 from rest_framework_simplejwt.tokens import AccessToken
 
 from rest_framework.relations import SlugRelatedField
+
 from .serializer_fields import RatingByScoresField
-from reviews.models import Category, Titles, Genre, User, Review, Comment
+from reviews.models import Category, Title, Genre, User, Review, Comment
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -84,8 +85,9 @@ class TitleReadSerializer(serializers.ModelSerializer):
     rating = RatingByScoresField(source='reviews', read_only=True)
 
     class Meta:
-        model = Titles
+        model = Title
         fields = (
+            'id',
             'name',
             'year',
             'description',
@@ -104,8 +106,9 @@ class TitleWriteSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Titles
+        model = Title
         fields = (
+            'id',
             'name',
             'year',
             'description',
