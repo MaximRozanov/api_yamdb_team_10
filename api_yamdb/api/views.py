@@ -31,6 +31,14 @@ class UsersViewSet(viewsets.ModelViewSet):
     search_fields = ('username',)
 
 
+class CategoryGenreMixinViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    pass
+
 class MixinViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
@@ -45,7 +53,7 @@ class MixinViewSet(
         return super().update(request, *args, **kwargs)
 
 
-class CategoryViewSet(MixinViewSet):
+class CategoryViewSet(CategoryGenreMixinViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
@@ -54,7 +62,7 @@ class CategoryViewSet(MixinViewSet):
     permission_classes = [IsAdminOrReadOnly, ]
 
 
-class GenreViewSet(MixinViewSet):
+class GenreViewSet(CategoryGenreMixinViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
