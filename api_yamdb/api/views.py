@@ -167,7 +167,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs['title_id'])
-        serializer.save(author=self.request.user, title=title)
+        serializer.save(title=title)
 
     serializer_class = ReviewSerializer
     permission_classes = [
