@@ -11,14 +11,8 @@ class CategoryGenreMixinViewSet(
     pass
 
 
-class TitlesMixinViewSet(
-    mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
-):
+class TitlesMixinViewSet(viewsets.ModelViewSet):
+
     def update(self, request, *args, **kwargs):
         if request.method == 'PUT':
             raise MethodNotAllowed('PUT запросы не разрешены.')
