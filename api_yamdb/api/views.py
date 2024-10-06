@@ -20,19 +20,15 @@ from .serializers import (
     UsersSerializer,
     NoAdminSerializer,
     SignupSerializer,
-    ReviewSerializer, TokenSerializer,
+    ReviewSerializer,
+    TokenSerializer,
     ReviewSerializer,
     TitleReadSerializer,
-    TitleWriteSerializer
+    TitleWriteSerializer,
 )
 
 from reviews.models import Category, Genre, Title, User, Review, Comment
-from .permissions import (
-    IsOwnerOrModeratorAdmin,
-    IsAdminOrReadOnly
-    IsOwnerOrModeratorAdmin, 
-    AdminOnly,
-)
+from .permissions import IsAdminOrReadOnly, ModeratorAdmin, AdminOnly
 from .utils import generate_confirmation_code
 from .filters import TitlesFilter
 
@@ -47,22 +43,24 @@ class UsersViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
-        methods=['GET', 'PATCH', ],
+        methods=[
+            'GET',
+            'PATCH',
+        ],
         detail=False,
         permission_classes=(IsAuthenticated,),
-        url_path='me')
+        url_path='me',
+    )
     def get_current_user_info(self, request):
         if request.method == 'PATCH':
             if request.user.is_admin:
                 serializer = UsersSerializer(
-                    request.user,
-                    data=request.data,
-                    partial=True)
+                    request.user, data=request.data, partial=True
+                )
             else:
                 serializer = NoAdminSerializer(
-                    request.user,
-                    data=request.data,
-                    partial=True)
+                    request.user, data=request.data, partial=True
+                )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -93,8 +91,10 @@ class APISignup(APIView):
         )
 
     def post(self, request):
-        user = User.objects.filter(username=request.data.get('username'),
-                                   email=request.data.get('email'))
+        user = User.objects.filter(
+            username=request.data.get('username'),
+            email=request.data.get('email'),
+        )
         if user.exists():
             self.send_confirmation_code(request)
             return Response(request.data, status=status.HTTP_200_OK)
@@ -112,6 +112,7 @@ class CategoryGenreMixinViewSet(
     viewsets.GenericViewSet,
 ):
     pass
+
 
 class MixinViewSet(
     mixins.CreateModelMixin,
@@ -133,7 +134,9 @@ class CategoryViewSet(CategoryGenreMixinViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = [IsAdminOrReadOnly, ]
+    permission_classes = [
+        IsAdminOrReadOnly,
+    ]
 
 
 class GenreViewSet(CategoryGenreMixinViewSet):
@@ -142,7 +145,9 @@ class GenreViewSet(CategoryGenreMixinViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = [IsAdminOrReadOnly, ]
+    permission_classes = [
+        IsAdminOrReadOnly,
+    ]
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -166,7 +171,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     serializer_class = ReviewSerializer
     permission_classes = [
-        IsOwnerOrModeratorAdmin,
+        ModeratorAdmin,
     ]
 
 
@@ -174,8 +179,10 @@ class TitlesViewSet(MixinViewSet):
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
-    permission_classes = [IsAdminOrReadOnly, ]
-    
+    permission_classes = [
+        IsAdminOrReadOnly,
+    ]
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TitleReadSerializer
@@ -206,5 +213,5 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     serializer_class = CommentSerializer
     permission_classes = [
-        IsOwnerOrModeratorAdmin,
+        ModeratorAdmin,
     ]
