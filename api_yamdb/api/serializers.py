@@ -14,28 +14,37 @@ from reviews.models import Category, Title, Genre, User, Review, Comment
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
 
 
 class NoAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
         read_only_fields = ('role',)
 
 
 class TokenSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
-        required=True)
-    confirmation_code = serializers.CharField(
-        required=True)
+    username = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = (
-            'username',
-            'confirmation_code'
-        )
+        fields = ('username', 'confirmation_code')
 
     def validate(self, data):
         user = get_object_or_404(User, username=data.get('username'))
