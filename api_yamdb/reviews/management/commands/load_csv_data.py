@@ -13,6 +13,7 @@ from reviews.models import (Category,
 
 PATH = 'static/data/'
 
+
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
