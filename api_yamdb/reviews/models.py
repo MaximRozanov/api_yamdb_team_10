@@ -1,9 +1,11 @@
+import random
+
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.contrib.auth.models import AbstractUser
 
 from .validators import validate_username
-from .constants import USER, ADMIN, MODERATOR, MAX_LENGTH
+from .constants import USER, ADMIN, MODERATOR, MAX_LENGTH, USERS_ROLE
 
 
 class Category(models.Model):
@@ -40,23 +42,14 @@ class GenreTitle(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
 
 
-USERS_ROLE = [
-    (USER, USER),
-    (ADMIN, ADMIN),
-    (MODERATOR, MODERATOR),
-]
-
-
 class User(AbstractUser):
     username = models.CharField(
-        validators=(validate_username,),
+        validators=(validate_username, RegexValidator(regex=r'^[\w.@+-]+\Z')),
         max_length=MAX_LENGTH,
         unique=True,
-        blank=False,
-        null=False,
     )
     email = models.EmailField(
-        max_length=254, unique=True, blank=False, null=False
+        max_length=254, unique=True, null=False
     )
     role = models.CharField(
         max_length=20, choices=USERS_ROLE, default=USER, blank=True
@@ -64,11 +57,8 @@ class User(AbstractUser):
     bio = models.TextField(
         blank=True,
     )
-    first_name = models.CharField(max_length=150, blank=True)
-    last_name = models.CharField(max_length=150, blank=True)
     confirmation_code = models.CharField(
         max_length=MAX_LENGTH,
-        null=False,
         blank=True,
     )
 
