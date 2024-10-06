@@ -34,7 +34,7 @@ from .permissions import (
 )
 from .utils import generate_confirmation_code
 from .filters import TitlesFilter
-from .mixins import CategoryGenreMixinViewSet, MixinViewSet
+from .mixins import CategoryGenreMixinViewSet, TitlesMixinViewSet
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -148,7 +148,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     ]
 
 
-class TitlesViewSet(MixinViewSet):
+class TitlesViewSet(TitlesMixinViewSet):
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter

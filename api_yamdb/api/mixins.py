@@ -11,7 +11,7 @@ class CategoryGenreMixinViewSet(
     pass
 
 
-class MixinViewSet(
+class TitlesMixinViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
