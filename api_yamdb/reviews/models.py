@@ -1,7 +1,11 @@
 import random
 
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator,
+)
 from django.contrib.auth.models import AbstractUser
 
 from .validators import validate_username
@@ -27,9 +31,9 @@ class Genre(models.Model):
 class Title(models.Model):
     name = models.CharField(max_length=256)
     year = models.IntegerField()
-    category = models.ForeignKey(Category,
-                                 on_delete=models.SET_NULL,
-                                 null=True)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True
+    )
     genre = models.ManyToManyField(Genre, through='GenreTitle')
     description = models.TextField(blank=True, null=True)
 
@@ -48,9 +52,7 @@ class User(AbstractUser):
         max_length=MAX_LENGTH,
         unique=True,
     )
-    email = models.EmailField(
-        max_length=254, unique=True, null=False
-    )
+    email = models.EmailField(max_length=254, unique=True, null=False)
     role = models.CharField(
         max_length=20, choices=USERS_ROLE, default=USER, blank=True
     )
@@ -88,6 +90,13 @@ class Review(models.Model):
         validators=[MaxValueValidator(10), MinValueValidator(1)],
     )
     pub_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'], name='unique_review'
+            )
+        ]
 
 
 class Comment(models.Model):

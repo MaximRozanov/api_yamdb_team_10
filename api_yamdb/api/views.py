@@ -30,17 +30,16 @@ from reviews.models import Category, Genre, Title, User, Review, Comment
 from .permissions import IsAdminOrReadOnly, ModeratorAdmin, AdminOnly
 from .utils import generate_confirmation_code
 from .filters import TitlesFilter
-from .mixins import CategoryGenreMixinViewSet, TitlesMixinViewSet
+from .mixins import CategoryGenreMixinViewSet, MethodPUTNotAllowedMixin
 
 
-class UsersViewSet(viewsets.ModelViewSet):
+class UsersViewSet(MethodPUTNotAllowedMixin):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = (IsAuthenticated, AdminOnly)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     lookup_field = 'username'
-    http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
         methods=[
@@ -127,7 +126,7 @@ class GenreViewSet(CategoryGenreMixinViewSet):
     ]
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewViewSet(MethodPUTNotAllowedMixin):
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs['title_id'])
         return Review.objects.filter(title=title)
@@ -144,7 +143,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs['title_id'])
-        serializer.save(author=self.request.user, title=title)
+        serializer.save(title=title)
 
     serializer_class = ReviewSerializer
     permission_classes = [
@@ -152,21 +151,21 @@ class ReviewViewSet(viewsets.ModelViewSet):
     ]
 
 
-class TitlesViewSet(TitlesMixinViewSet):
+class TitlesViewSet(MethodPUTNotAllowedMixin):
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
     permission_classes = [
         IsAdminOrReadOnly,
     ]
-    
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TitleReadSerializer
         return TitleWriteSerializer
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(MethodPUTNotAllowedMixin):
     def get_queryset(self):
         review = get_object_or_404(
             Review.objects.filter(title__id=self.kwargs['title_id']),
