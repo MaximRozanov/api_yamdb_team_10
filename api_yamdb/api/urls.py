@@ -9,13 +9,14 @@ from api.views import (
     CommentViewSet,
 )
 
-from api.views import (CategoryViewSet,
-                       GenreViewSet,
-                       UsersViewSet,
-                       TitlesViewSet,
-                       APIToken,
-                       APISignup,
-                       )
+from api.views import (
+    CategoryViewSet,
+    GenreViewSet,
+    UsersViewSet,
+    TitlesViewSet,
+    APIToken,
+    APISignup,
+)
 
 from api.views import CategoryViewSet, GenreViewSet
 from api.constants import VERSION
