@@ -11,7 +11,7 @@ class CategoryGenreMixinViewSet(
     pass
 
 
-class TitlesMixinViewSet(viewsets.ModelViewSet):
+class MethodPUTNotAllowedMixin(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         if request.method == 'PUT':
