@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 from reviews.models import (Category,
                             Genre,
-                            Titles,
+                            Title,
                             GenreTitle,
                             User,
                             Review,
@@ -30,11 +30,11 @@ class Command(BaseCommand):
             genre.save()
         for row in DictReader(open(f'{PATH}titles.csv',
                                    encoding="utf8")):
-            title = Titles(id=row['id'],
-                           name=row['name'],
-                           year=row['year'],
-                           category=Category.objects.get(pk=row['category']),
-                           )
+            title = Title(id=row['id'],
+                          name=row['name'],
+                          year=row['year'],
+                          category=Category.objects.get(pk=row['category']),
+                          )
             title.save()
         for row in DictReader(open(f'{PATH}users.csv',
                                    encoding="utf8")):
@@ -50,7 +50,7 @@ class Command(BaseCommand):
         for row in DictReader(open(f'{PATH}review.csv',
                                    encoding="utf8")):
             review = Review(id=row['id'],
-                            title=Titles.objects.get(pk=row['title_id']),
+                            title=Title.objects.get(pk=row['title_id']),
                             text=row['text'],
                             author=User.objects.get(pk=row['author']),
                             score=row['score'],
@@ -69,7 +69,7 @@ class Command(BaseCommand):
         for row in DictReader(open(f'{PATH}genre_title.csv',
                                    encoding="utf8")):
             genre_title = GenreTitle(id=row['id'],
-                                     title=Titles.objects.get(
+                                     title=Title.objects.get(
                                          pk=row['title_id']),
                                      genre=Genre.objects.get(
                                          pk=row['genre_id']),

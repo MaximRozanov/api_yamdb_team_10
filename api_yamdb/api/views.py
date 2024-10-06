@@ -1,12 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import MethodNotAllowed
-from rest_framework import viewsets, mixins, filters
+from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from rest_framework import filters, status
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -31,6 +30,7 @@ from reviews.models import Category, Genre, Title, User, Review, Comment
 from .permissions import IsAdminOrReadOnly, ModeratorAdmin, AdminOnly
 from .utils import generate_confirmation_code
 from .filters import TitlesFilter
+from .mixins import CategoryGenreMixinViewSet, TitlesMixinViewSet
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -105,29 +105,6 @@ class APISignup(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CategoryGenreMixinViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
-    pass
-
-
-class MixinViewSet(
-    mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
-):
-    def update(self, request, *args, **kwargs):
-        if request.method == 'PUT':
-            raise MethodNotAllowed('PUT запросы не разрешены.')
-        return super().update(request, *args, **kwargs)
-
-
 class CategoryViewSet(CategoryGenreMixinViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -175,14 +152,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
     ]
 
 
-class TitlesViewSet(MixinViewSet):
+class TitlesViewSet(TitlesMixinViewSet):
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
     permission_classes = [
         IsAdminOrReadOnly,
     ]
-
+    
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TitleReadSerializer
