@@ -27,7 +27,7 @@ from .serializers import (
 
 from reviews.models import Category, Genre, Titles, User, Review, Comment
 from .permissions import (
-    IsOwnerOrModeratorAdmin,
+    IsOwnerOrModeratorAdmin, AdminOnly,
 )
 from .utils import generate_confirmation_code
 from .filters import TitlesFilter
@@ -48,7 +48,6 @@ class UsersViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
         url_path='me')
     def get_current_user_info(self, request):
-        serializer = UsersSerializer(request.user)
         if request.method == 'PATCH':
             if request.user.is_admin:
                 serializer = UsersSerializer(
@@ -63,6 +62,7 @@ class UsersViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = UsersSerializer(request.user)
         return Response(serializer.data)
 
 
@@ -89,11 +89,12 @@ class APISignup(APIView):
         )
 
     def post(self, request):
-        serializer = SignupSerializer(data=request.data)
-        if User.objects.filter(username=request.data.get('username'),
-                               email=request.data.get('email')).exists():
+        user = User.objects.filter(username=request.data.get('username'),
+                                   email=request.data.get('email')).exists()
+        if user:
             self.send_confirmation_code(request)
             return Response(request.data, status=status.HTTP_200_OK)
+        serializer = SignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         self.send_confirmation_code(request)
