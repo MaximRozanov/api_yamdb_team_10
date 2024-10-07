@@ -9,27 +9,33 @@ from django.core.validators import (
 from django.contrib.auth.models import AbstractUser
 
 from .validators import validate_username, year_validator
-from .constants import USER, ADMIN, MODERATOR, MAX_LENGTH, USERS_ROLE
+from .constants import (USER,
+                        ADMIN,
+                        MODERATOR,
+                        MAX_LENGTH,
+                        USERS_ROLE,
+                        NAME_MAX_LENGTH,
+                        SLUG_MAX_LENGTH)
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=256)
-    slug = models.SlugField(unique=True, max_length=50)
+    name = models.CharField(max_length=NAME_MAX_LENGTH)
+    slug = models.SlugField(unique=True, max_length=SLUG_MAX_LENGTH)
 
     def __str__(self):
         return self.slug
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=256)
-    slug = models.SlugField(unique=True, max_length=50)
+    name = models.CharField(max_length=NAME_MAX_LENGTH)
+    slug = models.SlugField(unique=True, max_length=SLUG_MAX_LENGTH)
 
     def __str__(self):
         return self.slug
 
 
 class Title(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=NAME_MAX_LENGTH)
     year = models.IntegerField(validators=[year_validator, ])
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True
