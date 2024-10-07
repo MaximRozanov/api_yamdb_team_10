@@ -14,13 +14,23 @@ from reviews.models import Category, Title, Genre, User, Review, Comment
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
+        fields = ('username',
+                  'email',
+                  'first_name',
+                  'last_name',
+                  'bio',
+                  'role')
 
 
 class NoAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role')
+        fields = ('username',
+                  'email',
+                  'first_name',
+                  'last_name',
+                  'bio',
+                  'role')
         read_only_fields = ('role',)
 
 
