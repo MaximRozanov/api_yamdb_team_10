@@ -5,21 +5,17 @@ from api.views import (
     CategoryViewSet,
     GenreViewSet,
     ReviewViewSet,
-    UsersViewSet,
     CommentViewSet,
 )
 
 from api.views import (
     CategoryViewSet,
     GenreViewSet,
-    UsersViewSet,
     TitlesViewSet,
-    APIToken,
-    APISignup,
 )
 
 from api.views import CategoryViewSet, GenreViewSet
-from api.constants import VERSION
+from custom_user.views import APIToken, APISignup, UsersViewSet
 
 router_v1 = DefaultRouter()
 
@@ -39,7 +35,7 @@ router_v1.register(
 )
 
 urlpatterns = [
-    path(f'api/{VERSION}/auth/token/', APIToken.as_view(), name='token'),
-    path(f'api/{VERSION}/', include(router_v1.urls)),
-    path(f'api/{VERSION}/auth/signup/', APISignup.as_view(), name='signup'),
+    path('api/v1/auth/token/', APIToken.as_view(), name='token'),
+    path('api/v1/', include(router_v1.urls)),
+    path('api/v1/auth/signup/', APISignup.as_view(), name='signup'),
 ]

@@ -1,10 +1,2 @@
-USER = 'user'
-ADMIN = 'admin'
-MODERATOR = 'moderator'
-MAX_LENGTH = 150
-
-USERS_ROLE = [
-    (USER, USER),
-    (ADMIN, ADMIN),
-    (MODERATOR, MODERATOR),
-]
+NAME_MAX_LENGTH = 256
+SLUG_MAX_LENGTH = 50
