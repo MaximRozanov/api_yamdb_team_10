@@ -1,8 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import filters
-from rest_framework.exceptions import ValidationError
-from rest_framework import filters
 from django.db.models import Avg, IntegerField
 
 from .serializers import (
@@ -59,13 +57,6 @@ class ReviewViewSet(MethodPUTNotAllowedMixin):
         return Review.objects.filter(title=self.get_title())
 
     def perform_create(self, serializer):
-        queryset = Review.objects.filter(
-            author=self.request.user, title=self.get_title()
-        )
-
-        if queryset.exists():
-            raise ValidationError('Отзыв уже существует')
-
         serializer.save(author=self.request.user, title=self.get_title())
 
     def perform_update(self, serializer):

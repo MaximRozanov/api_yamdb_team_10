@@ -28,6 +28,20 @@ class GenreSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
 
+    def validate(self, attrs):
+        if self.context["request"].method != 'POST':
+            return attrs
+
+        review = Review.objects.filter(
+            author=self.context["request"].user,
+            title__id=self.context["view"].get_title_id(),
+        )
+
+        if review.exists():
+            raise serializers.ValidationError('Обзор от вас уже существует')
+
+        return attrs
+
     class Meta:
         fields = '__all__'
         model = Review
