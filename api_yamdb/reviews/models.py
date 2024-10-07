@@ -17,8 +17,10 @@ from .constants import (USER,
 
 
 class Category(models.Model):
-    name = models.CharField('Название', max_length=NAME_MAX_LENGTH)
-    slug = models.SlugField('Слаг', unique=True, max_length=SLUG_MAX_LENGTH)
+    name = models.CharField(verbose_name='Название',
+                            max_length=NAME_MAX_LENGTH)
+    slug = models.SlugField(verbose_name='Слаг', unique=True,
+                            max_length=SLUG_MAX_LENGTH)
 
     def __str__(self):
         return self.slug
@@ -29,8 +31,10 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    name = models.CharField('Название', max_length=NAME_MAX_LENGTH)
-    slug = models.SlugField('Слаг', unique=True, max_length=SLUG_MAX_LENGTH)
+    name = models.CharField(verbose_name='Название',
+                            max_length=NAME_MAX_LENGTH)
+    slug = models.SlugField(verbose_name='Слаг', unique=True,
+                            max_length=SLUG_MAX_LENGTH)
 
     def __str__(self):
         return self.slug
@@ -41,13 +45,19 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField('Название', max_length=NAME_MAX_LENGTH)
-    year = models.IntegerField('Год выхода', validators=[year_validator, ])
-    category = models.ForeignKey(
-        'Категория', Category, on_delete=models.SET_NULL, null=True
-    )
-    genre = models.ManyToManyField('Жанр', Genre, through='GenreTitle')
-    description = models.TextField('Описание', blank=True, null=True)
+    name = models.CharField(verbose_name='Название',
+                            max_length=NAME_MAX_LENGTH)
+    year = models.IntegerField(verbose_name='Год выхода',
+                               validators=[year_validator, ])
+    category = models.ForeignKey(Category,
+                                 verbose_name='Категория',
+                                 on_delete=models.SET_NULL,
+                                 null=True)
+    genre = models.ManyToManyField(Genre, verbose_name='Жанр',
+                                   through='GenreTitle')
+    description = models.TextField(verbose_name='Описание',
+                                   blank=True,
+                                   null=True)
 
     def __str__(self):
         return self.name
@@ -58,8 +68,12 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
-    title = models.ForeignKey('Произведение', Title, on_delete=models.CASCADE)
-    genre = models.ForeignKey('Жанр', Genre, on_delete=models.CASCADE)
+    title = models.ForeignKey(Title,
+                              verbose_name='Произведение',
+                              on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre,
+                              verbose_name='Жанр',
+                              on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Жанр произведения'
