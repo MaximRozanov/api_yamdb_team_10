@@ -1,11 +1,7 @@
 from rest_framework import serializers
-
 from rest_framework.validators import UniqueValidator
 from django.utils.timezone import now
-
 from rest_framework.relations import SlugRelatedField
-
-from .serializer_fields import RatingByScoresField
 from reviews.models import Category, Title, Genre, Review, Comment
 
 
@@ -32,6 +28,20 @@ class GenreSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
 
+    def validate(self, attrs):
+        if self.context["request"].method != 'POST':
+            return attrs
+
+        review = Review.objects.filter(
+            author=self.context["request"].user,
+            title__id=self.context["view"].get_title_id(),
+        )
+
+        if review.exists():
+            raise serializers.ValidationError('Обзор от вас уже существует')
+
+        return attrs
+
     class Meta:
         fields = '__all__'
         model = Review
@@ -41,7 +51,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class TitleReadSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
-    rating = RatingByScoresField(source='reviews', read_only=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
@@ -62,7 +72,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         queryset=Genre.objects.all(),
         many=True,
         allow_null=False,
-        allow_empty=False
+        allow_empty=False,
     )
     category = serializers.SlugRelatedField(
         slug_field='slug', queryset=Category.objects.all()
@@ -88,7 +98,8 @@ class TitleWriteSerializer(serializers.ModelSerializer):
     def validate_genre(self, value):
         if value is None:
             raise serializers.ValidationError(
-                'Поле жанра не должно быть пустым')
+                'Поле жанра не должно быть пустым'
+            )
         return value
 
 
