@@ -9,8 +9,9 @@ def validate_username(value):
             'Использовать имя "me" в качестве username запрещено.',
         )
 
+
 def year_validator(value):
     if value > datetime.now().year:
-        raise ValidationError(('Введите корректный год'),
-                              params={'value': value},
-        )
+        raise ValidationError(
+            ('Введите корректный год'),
+            params={'value': value},)
