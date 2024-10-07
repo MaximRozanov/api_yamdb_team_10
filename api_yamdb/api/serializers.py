@@ -7,7 +7,6 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from rest_framework.relations import SlugRelatedField
 
-from .serializer_fields import RatingByScoresField
 from reviews.models import Category, Title, Genre, User, Review, Comment
 
 
@@ -82,6 +81,12 @@ class GenreSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
 
+    def validate(self, attrs):
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
     class Meta:
         fields = '__all__'
         model = Review
@@ -91,7 +96,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class TitleReadSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
-    rating = RatingByScoresField(source='reviews', read_only=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
