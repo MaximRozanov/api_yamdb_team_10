@@ -37,7 +37,7 @@ router_v1.register(
 )
 
 urlpatterns = [
-    path(f'api/v1/auth/token/', APIToken.as_view(), name='token'),
-    path(f'api/v1/', include(router_v1.urls)),
-    path(f'api/v1/auth/signup/', APISignup.as_view(), name='signup'),
+    path('api/v1/auth/token/', APIToken.as_view(), name='token'),
+    path('api/v1/', include(router_v1.urls)),
+    path('api/v1/auth/signup/', APISignup.as_view(), name='signup'),
 ]
