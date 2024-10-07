@@ -11,7 +11,12 @@ from api.mixins import MethodPUTNotAllowedMixin
 from api.permissions import AdminOnly
 from api.utils import generate_confirmation_code
 from custom_user.models import User
-from custom_user.serializers import UsersSerializer, NoAdminSerializer, TokenSerializer, SignupSerializer
+from custom_user.serializers import (
+    UsersSerializer,
+    NoAdminSerializer,
+    TokenSerializer,
+    SignupSerializer,
+)
 
 
 class UsersViewSet(MethodPUTNotAllowedMixin):

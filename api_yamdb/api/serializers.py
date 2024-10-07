@@ -1,19 +1,11 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from rest_framework.validators import UniqueValidator
 from django.utils.timezone import now
-from rest_framework_simplejwt.tokens import AccessToken
 
 from rest_framework.relations import SlugRelatedField
 
-from reviews.models import Category, Title, Genre, User, Review, Comment
-
-
-
-
-
-
+from reviews.models import Category, Title, Genre, Review, Comment
 
 
 class CategorySerializer(serializers.ModelSerializer):

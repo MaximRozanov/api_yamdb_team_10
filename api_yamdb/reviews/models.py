@@ -2,12 +2,9 @@ from django.db import models
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
-    RegexValidator,
 )
-from django.contrib.auth.models import AbstractUser
 
 from custom_user.models import User
-
 
 
 class Category(models.Model):
@@ -42,9 +39,6 @@ class Title(models.Model):
 class GenreTitle(models.Model):
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
-
-
-
 
 
 class Review(models.Model):
