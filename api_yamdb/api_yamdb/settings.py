@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
+    'custom_user'
 ]
 
 MIDDLEWARE = [
@@ -119,4 +120,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
 
-AUTH_USER_MODEL = 'reviews.User'
+AUTH_USER_MODEL = 'custom_user.User'
