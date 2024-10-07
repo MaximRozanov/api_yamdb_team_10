@@ -8,7 +8,7 @@ from django.core.validators import (
 )
 from django.contrib.auth.models import AbstractUser
 
-from .validators import validate_username
+from .validators import validate_username, year_validator
 from .constants import USER, ADMIN, MODERATOR, MAX_LENGTH, USERS_ROLE
 
 
@@ -30,7 +30,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(max_length=256)
-    year = models.IntegerField()
+    year = models.IntegerField(validators=[year_validator, ])
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True
     )
