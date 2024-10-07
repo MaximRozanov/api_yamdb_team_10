@@ -18,7 +18,6 @@ from api.views import (CategoryViewSet,
                        )
 
 from api.views import CategoryViewSet, GenreViewSet
-from api.constants import VERSION
 
 router_v1 = DefaultRouter()
 
@@ -38,7 +37,7 @@ router_v1.register(
 )
 
 urlpatterns = [
-    path(f'api/{VERSION}/auth/token/', APIToken.as_view(), name='token'),
-    path(f'api/{VERSION}/', include(router_v1.urls)),
-    path(f'api/{VERSION}/auth/signup/', APISignup.as_view(), name='signup'),
+    path(f'api/v1/auth/token/', APIToken.as_view(), name='token'),
+    path(f'api/v1/', include(router_v1.urls)),
+    path(f'api/v1/auth/signup/', APISignup.as_view(), name='signup'),
 ]
