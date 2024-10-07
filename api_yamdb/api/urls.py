@@ -5,21 +5,18 @@ from api.views import (
     CategoryViewSet,
     GenreViewSet,
     ReviewViewSet,
-    UsersViewSet,
     CommentViewSet,
 )
 
 from api.views import (
     CategoryViewSet,
     GenreViewSet,
-    UsersViewSet,
     TitlesViewSet,
-    APIToken,
-    APISignup,
 )
 
 from api.views import CategoryViewSet, GenreViewSet
 from api.constants import VERSION
+from custom_user.views import APIToken, APISignup, UsersViewSet
 
 router_v1 = DefaultRouter()
 
