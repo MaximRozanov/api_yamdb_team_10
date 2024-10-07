@@ -28,12 +28,6 @@ class GenreSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
 
-    def validate(self, attrs):
-        return super().validate(attrs)
-
-    def create(self, validated_data):
-        return super().create(validated_data)
-
     class Meta:
         fields = '__all__'
         model = Review
