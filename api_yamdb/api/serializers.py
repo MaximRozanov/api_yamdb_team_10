@@ -127,7 +127,8 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
     def validate_genre(self, value):
         if value is None:
-            raise serializers.ValidationError('Поле жанра не должнобыть пустым')
+            raise serializers.ValidationError(
+                'Поле жанра не должно быть пустым')
         return value
 
 
